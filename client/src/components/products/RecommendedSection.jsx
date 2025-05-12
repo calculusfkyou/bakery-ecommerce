@@ -1,7 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SectionTitle } from './SectionTitle';
 
 export function RecommendedSection({ recommendedDrinksData }) {
+  const navigate = useNavigate();
+
+  const handleNavigate = (id) => {
+    navigate(`/products/${id}`);
+  };
+
   return (
     <section id="recommended" className="mb-16 scroll-mt-20">
       {/* 自定義標題區塊，使用麵包色 */}
@@ -14,7 +21,10 @@ export function RecommendedSection({ recommendedDrinksData }) {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
         <div className="md:col-span-7">
-          <div className="relative group overflow-hidden rounded-lg shadow-md">
+          <div
+            className="relative group overflow-hidden rounded-lg shadow-md cursor-pointer"
+            onClick={() => handleNavigate(recommendedDrinksData[0].id)}
+          >
             <img
               src={recommendedDrinksData[0].image}
               alt={recommendedDrinksData[0].name}
@@ -28,7 +38,11 @@ export function RecommendedSection({ recommendedDrinksData }) {
 
         <div className="md:col-span-5 grid grid-cols-2 grid-rows-2 gap-4">
           {recommendedDrinksData.slice(1).map((drink, index) => (
-            <div key={drink.id} className="relative group overflow-hidden rounded-lg shadow-md">
+            <div
+              key={drink.id}
+              className="relative group overflow-hidden rounded-lg shadow-md cursor-pointer"
+              onClick={() => handleNavigate(drink.id)}
+            >
               <img
                 src={drink.image}
                 alt={drink.name}

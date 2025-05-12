@@ -1,7 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home'
 import ContactPage from './pages/ContactPage'; // 匯入 ContactPage
 import ProductsPage from './pages/ProductsPage'; // 匯入 ProductsPage
+import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage'; // 匯入 OrderSuccessPage
 import NewsPage from './pages/api/NewsPage'; // 匯入 NewsPage
 import NewsDetailPage from './pages/api/NewsDetailPage'; // 匯入 NewsDetailPage
 import LocationsPage from './pages/api/LocationsPage'; // 匯入 LocationsPage
@@ -12,6 +16,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import LoginPage from './pages/auth/LoginPage';
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +25,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<ContactPage />} /> {/* 新增聯絡我們路由 */}
           <Route path="/products" element={<ProductsPage />} /> {/* 新增飲品介紹路由 */}
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />} /> {/* 新增訂單成功頁面路由 */}
           <Route path="/news" element={<NewsPage />} /> {/* 新增新聞列表路由 */}
           <Route path="/news/:id" element={<NewsDetailPage />} /> {/* 新增新聞詳情路由 */}
           <Route path="/locations" element={<LocationsPage />} />

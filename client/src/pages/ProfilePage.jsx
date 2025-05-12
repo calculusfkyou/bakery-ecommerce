@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import UserInfoSection from '../components/profile/UserInfoSection';
 import PasswordChangeSection from '../components/profile/PasswordChangeSection';
 import OrderHistorySection from '../components/profile/OrderHistorySection';
 import AddressSection from '../components/profile/AddressSection';
+import FavoritesSection from '../components/profile/FavoritesSection'; // 新增引入
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -13,6 +14,16 @@ export default function ProfilePage() {
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('personal-info');
   const navigate = useNavigate();
+  const location = useLocation();
+  // 從路由狀態中獲取要顯示的頁面區塊
+  const initialSection = location.state?.activeSection || 'personal-info';
+
+  // 在 useEffect 中設定初始頁面
+  useEffect(() => {
+    if (initialSection) {
+      setActiveSection(initialSection);
+    }
+  }, [initialSection]);
 
   useEffect(() => {
     // 檢查用戶是否登入
@@ -87,6 +98,8 @@ export default function ProfilePage() {
         return <OrderHistorySection user={user} />;
       case 'addresses':
         return <AddressSection user={user} />;
+      case 'favorites': // 新增最愛清單區塊
+        return <FavoritesSection user={user} />;
       default:
         return <UserInfoSection user={user} setUser={setUser} />;
     }
@@ -178,8 +191,8 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveSection('personal-info')}
                   className={`w-full text-left py-3 px-4 ${activeSection === 'personal-info'
-                      ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
-                      : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
+                    : 'text-gray-600 hover:bg-gray-50'
                     }`}
                 >
                   個人資料
@@ -187,8 +200,8 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveSection('change-password')}
                   className={`w-full text-left py-3 px-4 ${activeSection === 'change-password'
-                      ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
-                      : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
+                    : 'text-gray-600 hover:bg-gray-50'
                     }`}
                 >
                   變更密碼
@@ -196,8 +209,8 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveSection('orders')}
                   className={`w-full text-left py-3 px-4 ${activeSection === 'orders'
-                      ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
-                      : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
+                    : 'text-gray-600 hover:bg-gray-50'
                     }`}
                 >
                   訂單記錄
@@ -205,11 +218,21 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveSection('addresses')}
                   className={`w-full text-left py-3 px-4 ${activeSection === 'addresses'
-                      ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
-                      : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
+                    : 'text-gray-600 hover:bg-gray-50'
                     }`}
                 >
                   配送地址
+                </button>
+                {/* 新增最愛清單選項 */}
+                <button
+                  onClick={() => setActiveSection('favorites')}
+                  className={`w-full text-left py-3 px-4 ${activeSection === 'favorites'
+                    ? 'bg-gray-100 border-l-4 border-[#4a5332] text-[#4a5332]'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                >
+                  我的最愛
                 </button>
 
                 {/* 添加登出按鈕 */}

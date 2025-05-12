@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FiChevronDown, FiChevronUp, FiPackage, FiMapPin, FiCalendar, FiCreditCard } from 'react-icons/fi';
+import { getOrders } from '../../utils/orderUtils'; // 引入訂單工具函數
 
 export default function OrderHistorySection({ user }) {
   const [orders, setOrders] = useState([]);
@@ -6,41 +8,18 @@ export default function OrderHistorySection({ user }) {
   const [error, setError] = useState('');
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  // 模擬獲取訂單數據
-  // 實際應用中，這裡應該從後端API獲取真實數據
+  // 從 localStorage 獲取訂單數據
   useEffect(() => {
-    // 假設的訂單數據
-    const mockOrders = [
-      {
-        id: '1',
-        orderNumber: 'ORD-20240501-001',
-        date: '2024-05-01',
-        status: '已完成',
-        totalAmount: 320,
-        items: [
-          { name: '珍珠奶茶', size: '中杯', sugar: '微糖', ice: '少冰', quantity: 2, price: 110 },
-          { name: '四季春茶', size: '大杯', sugar: '無糖', ice: '正常冰', quantity: 1, price: 100 }
-        ],
-        store: '摸摸茶-台北101店'
-      },
-      {
-        id: '2',
-        orderNumber: 'ORD-20240428-052',
-        date: '2024-04-28',
-        status: '已完成',
-        totalAmount: 210,
-        items: [
-          { name: '芋頭鮮奶', size: '中杯', sugar: '正常糖', ice: '少冰', quantity: 1, price: 130 },
-          { name: '蜂蜜檸檬綠', size: '大杯', sugar: '半糖', ice: '去冰', quantity: 1, price: 80 }
-        ],
-        store: '摸摸茶-台北信義店'
-      }
-    ];
-
-    setTimeout(() => {
-      setOrders(mockOrders);
+    try {
+      // 使用 getOrders 函數獲取訂單數據
+      const userOrders = getOrders();
+      setOrders(userOrders);
       setLoading(false);
-    }, 1000); // 模擬載入延遲
+    } catch (err) {
+      console.error('獲取訂單資料錯誤:', err);
+      setError('無法載入訂單資料');
+      setLoading(false);
+    }
   }, []);
 
   const toggleOrderDetails = (orderId) => {
@@ -66,7 +45,7 @@ export default function OrderHistorySection({ user }) {
       ) : (
         <div className="space-y-4">
           {orders.map(order => (
-            <div key={order.id} className="border rounded-lg overflow-hidden">
+            <div key={order.id} className="border rounded-lg overflow-hidden shadow-sm">
               <div
                 className="bg-gray-50 p-4 flex justify-between items-center cursor-pointer"
                 onClick={() => toggleOrderDetails(order.id)}
@@ -74,7 +53,7 @@ export default function OrderHistorySection({ user }) {
                 <div>
                   <p className="font-medium">{order.orderNumber}</p>
                   <p className="text-sm text-gray-500">
-                    {order.date} | {order.store}
+                    {order.date.replace(/-/g, '/')} | {order.deliveryMethod === 'delivery' ? '宅配到府' : '門市自取'}
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -86,34 +65,117 @@ export default function OrderHistorySection({ user }) {
                     {order.status}
                   </span>
                   <p className="ml-4 font-medium">NT$ {order.totalAmount}</p>
-                  <svg
-                    className={`ml-2 w-5 h-5 transform ${expandedOrderId === order.id ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
+                  {expandedOrderId === order.id ?
+                    <FiChevronUp className="ml-2 w-5 h-5" /> :
+                    <FiChevronDown className="ml-2 w-5 h-5" />
+                  }
                 </div>
               </div>
 
               {expandedOrderId === order.id && (
                 <div className="p-4 border-t">
-                  <h3 className="font-medium mb-3">訂購項目</h3>
-                  <div className="space-y-2">
-                    {order.items.map((item, index) => (
-                      <div key={index} className="flex justify-between">
+                  {/* 配送/取貨資訊 */}
+                  <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                    <h4 className="font-medium flex items-center mb-2">
+                      <FiMapPin className="mr-2 text-[#5a6440]" />
+                      {order.deliveryMethod === 'delivery' ? '配送資訊' : '取貨資訊'}
+                    </h4>
+                    {order.deliveryMethod === 'delivery' ? (
+                      <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <p>{item.name} ({item.size})</p>
-                          <p className="text-xs text-gray-500">{item.sugar} / {item.ice} x {item.quantity}</p>
+                          <p className="text-gray-500">收件人</p>
+                          <p>{order.deliveryInfo.name}</p>
                         </div>
-                        <p className="font-medium">NT$ {item.price * item.quantity}</p>
+                        <div>
+                          <p className="text-gray-500">聯絡電話</p>
+                          <p>{order.deliveryInfo.phone}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-gray-500">配送地址</p>
+                          <p>{`${order.deliveryInfo.postalCode} ${order.deliveryInfo.city} ${order.deliveryInfo.address}`}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-500">取貨人</p>
+                          <p>{order.pickupInfo.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">聯絡電話</p>
+                          <p>{order.pickupInfo.phone}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-gray-500">取貨門市</p>
+                          <p>{order.store?.name}</p>
+                          <p className="text-sm text-gray-500">{order.store?.address}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 配送時間 */}
+                  <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                    <h4 className="font-medium flex items-center mb-2">
+                      <FiCalendar className="mr-2 text-[#5a6440]" />
+                      {order.deliveryMethod === 'delivery' ? '配送時間' : '取貨時間'}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <p className="text-gray-500">日期</p>
+                        <p>{order.deliveryDate.replace(/-/g, '/')}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">時間段</p>
+                        <p>{order.deliveryTime.replace('-', ' - ')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 付款資訊 */}
+                  <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                    <h4 className="font-medium flex items-center mb-2">
+                      <FiCreditCard className="mr-2 text-[#5a6440]" />
+                      付款資訊
+                    </h4>
+                    <p className="text-sm">{order.paymentMethod}</p>
+                  </div>
+
+                  {/* 訂購項目 */}
+                  <h4 className="font-medium flex items-center mb-2">
+                    <FiPackage className="mr-2 text-[#5a6440]" /> 訂購商品
+                  </h4>
+                  <div className="divide-y divide-gray-200 mb-4">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center py-3">
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {item.size && <span className="inline-block mr-2">尺寸: {item.size}</span>}
+                            {item.flavor && <span className="inline-block mr-2">口味: {item.flavor}</span>}
+                            {item.decoration && <span className="inline-block">裝飾: {item.decoration}</span>}
+                          </div>
+                          {item.message && (
+                            <p className="text-xs text-gray-500 mt-1 italic">「{item.message}」</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">
+                            {item.quantity} x NT$ {item.price}
+                          </p>
+                          <p className="font-medium">
+                            NT$ {(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <div className="border-t mt-4 pt-4 flex justify-between">
-                    <p className="font-medium">總計</p>
-                    <p className="font-medium">NT$ {order.totalAmount}</p>
+
+                  <div className="border-t pt-4 flex justify-between items-center">
+                    <p className="font-medium">訂單總計</p>
+                    <p className="font-bold text-[#5a6440] text-lg">
+                      NT$ {order.totalAmount.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               )}

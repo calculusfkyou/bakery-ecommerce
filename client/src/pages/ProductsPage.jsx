@@ -15,7 +15,7 @@ import { MenuSection } from '../components/products/MenuSection';
 // 飲品資料
 // 假設的飲品資料 (您需要替換成真實資料和圖片路徑)
 // 推薦產品
-const recommendedDrinksData = [
+export const recommendedDrinksData = [
   { id: 101, name: "招牌可頌", category: "經典系列", image: "/assets/Logo.png", popular: true, new: false, status: "in_stock" },
   { id: 102, name: "法式巧克力可頌", category: "經典系列", image: "/assets/Logo.png", popular: true, new: false, status: "in_stock" },
   { id: 103, name: "全麥雜糧麵包", category: "經典系列", image: "/assets/Logo.png", popular: false, new: true, status: "in_stock" },
@@ -24,7 +24,7 @@ const recommendedDrinksData = [
 ];
 
 // 經典系列麵包
-const classicDrinksData = [
+export const classicDrinksData = [
   {
     id: 201,
     name: "原味可頌",
@@ -94,7 +94,7 @@ const classicDrinksData = [
 ];
 
 // 特製蛋糕 (可客製化)
-const specialDrinksData = [
+export const specialDrinksData = [
   {
     id: 301,
     name: "草莓鮮奶蛋糕",
@@ -185,12 +185,20 @@ const specialDrinksData = [
     allergens: "蛋、奶製品",
     freshness: "冷藏保存3天",
     status: "in_stock",
-    customizable: false
+    customizable: true,  // 改為 true
+    customOptions: {     // 添加客製化選項
+      sizes: ["6吋", "8吋"],
+      flavors: ["原味", "抹茶風味", "焦糖風味"],
+      decorations: ["簡約設計", "水果裝飾", "金箔點綴"],
+      message: true,
+      messageMaxLength: 30,
+      advance_days: 1
+    }
   },
 ];
 
 // 其他甜點
-const mixDrinksData = [
+export const mixDrinksData = [
   {
     id: 401,
     name: "超級鳳梨酥",
@@ -410,7 +418,7 @@ export default function ProductsPage() {
     return allProducts.filter(product => {
       // 關鍵字搜尋
       const nameMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
       if (!nameMatch) return false;
 
       // 分類篩選
