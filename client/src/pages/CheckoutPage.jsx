@@ -22,16 +22,8 @@ export default function CheckoutPage() {
 
   // 配送資訊狀態
   const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' 或 'pickup'
-  const [deliveryInfo, setDeliveryInfo] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
-    postalCode: '',
-    city: '',
-  });
 
-  // 店鋪自取資訊
+  // 自取資訊
   const [pickupInfo, setPickupInfo] = useState({
     name: '',
     phone: '',
@@ -65,6 +57,16 @@ export default function CheckoutPage() {
   // 備註
   const [orderNotes, setOrderNotes] = useState('');
 
+  // 用戶和地址資訊
+  const [user, setUser] = useState(null);
+  const [userAddresses, setUserAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+
+  // 優惠碼相關
+  const [promoCode, setPromoCode] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoError, setPromoError] = useState('');
+
   // 店舖自取地點列表
   const storeLocations = [
     { id: 1, name: '台北信義門市', address: '台北市信義區信義路5段7號' },
@@ -94,6 +96,58 @@ export default function CheckoutPage() {
     // 生成可選配送日期
     generateAvailableDates();
   }, [navigate]);
+
+  // 載入用戶資訊
+  useEffect(() => {
+    // 模擬從 API 獲取用戶資訊
+    const fetchUserData = () => {
+      // 這裡應該改為實際的 API 請求
+      const mockUser = {
+        id: '123',
+        name: '王小明',
+        email: 'wang@example.com',
+        phone: '0912345678'
+      };
+
+      setUser(mockUser);
+
+      // 模擬獲取用戶地址
+      const mockAddresses = [
+        {
+          id: '1',
+          nickname: '家',
+          recipient: '王小明',
+          phone: '0912345678',
+          city: '台北市',
+          district: '大安區',
+          address: '忠孝東路四段2號5樓',
+          isDefault: true
+        },
+        {
+          id: '2',
+          nickname: '公司',
+          recipient: '王小明',
+          phone: '0923456789',
+          city: '台北市',
+          district: '信義區',
+          address: '松仁路100號',
+          isDefault: false
+        }
+      ];
+
+      setUserAddresses(mockAddresses);
+
+      // 自動選擇預設地址
+      const defaultAddress = mockAddresses.find(addr => addr.isDefault);
+      if (defaultAddress) {
+        setSelectedAddressId(defaultAddress.id);
+      } else if (mockAddresses.length > 0) {
+        setSelectedAddressId(mockAddresses[0].id);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // 生成可用的配送日期
   const generateAvailableDates = () => {
@@ -185,12 +239,6 @@ export default function CheckoutPage() {
     setDeliveryMethod(method);
   };
 
-  // 處理配送資訊變更
-  const handleDeliveryInfoChange = (e) => {
-    const { name, value } = e.target;
-    setDeliveryInfo({ ...deliveryInfo, [name]: value });
-  };
-
   // 處理自取資訊變更
   const handlePickupInfoChange = (e) => {
     const { name, value } = e.target;
@@ -236,6 +284,39 @@ export default function CheckoutPage() {
     setOrderNotes(e.target.value);
   };
 
+  // 處理新增地址
+  const handleAddNewAddress = () => {
+    // 導航到地址管理頁面或開啟地址表單模態框
+    alert('導航到地址管理頁面或開啟地址表單');
+    // 實際實現可能是:
+    // navigate('/profile/addresses/new');
+    // 或
+    // setShowAddressForm(true);
+  };
+
+  // 處理套用優惠碼
+  const handleApplyPromoCode = () => {
+    // 模擬驗證優惠碼
+    if (!promoCode.trim()) {
+      setPromoError('請輸入優惠碼');
+      return;
+    }
+
+    // 這裡應該改為實際的 API 請求來驗證優惠碼
+    if (promoCode.toLowerCase() === 'welcome10') {
+      // 10% 折扣
+      setPromoDiscount(totalPrice * 0.1);
+      setPromoError('');
+    } else if (promoCode.toLowerCase() === 'bakery100') {
+      // 固定折扣 100 元
+      setPromoDiscount(Math.min(100, totalPrice)); // 不超過訂單總額
+      setPromoError('');
+    } else {
+      setPromoError('無效的優惠碼');
+      setPromoDiscount(0);
+    }
+  };
+
   // 提交訂單
   const handleSubmitOrder = () => {
     // 創建訂單對象
@@ -243,9 +324,20 @@ export default function CheckoutPage() {
     const date = new Date();
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
+    // 取得選定的地址
+    const selectedAddress = userAddresses.find(addr => addr.id === selectedAddressId);
+
     // 根據配送方式獲取對應的配送信息
     const deliveryData = deliveryMethod === 'delivery'
-      ? { deliveryMethod, deliveryInfo, pickupInfo: null }
+      ? {
+          deliveryMethod,
+          deliveryInfo: {
+            name: selectedAddress?.recipient || '',
+            phone: selectedAddress?.phone || '',
+            address: `${selectedAddress?.city || ''}${selectedAddress?.district || ''}${selectedAddress?.address || ''}`,
+          },
+          pickupInfo: null
+        }
       : { deliveryMethod, deliveryInfo: null, pickupInfo };
 
     // 獲取對應的店鋪信息（如果是自取）
@@ -265,7 +357,7 @@ export default function CheckoutPage() {
       orderNumber: orderId,
       date: formattedDate,
       status: '處理中',
-      totalAmount: totalPrice,
+      totalAmount: totalPrice - promoDiscount, // 扣除優惠折扣
       paymentMethod: paymentText,
       ...deliveryData,
       deliveryDate,
@@ -282,7 +374,9 @@ export default function CheckoutPage() {
       })),
       store,
       invoiceType,
-      invoiceInfo
+      invoiceInfo,
+      promoCode: promoDiscount > 0 ? promoCode : null,
+      promoDiscount: promoDiscount
     };
 
     // 保存訂單到 localStorage
@@ -303,8 +397,7 @@ export default function CheckoutPage() {
     switch (step) {
       case 1: // 配送方式和資訊
         if (deliveryMethod === 'delivery') {
-          return deliveryInfo.name && deliveryInfo.phone && deliveryInfo.email &&
-            deliveryInfo.address && deliveryInfo.postalCode && deliveryInfo.city;
+          return selectedAddressId !== '';
         } else {
           return pickupInfo.name && pickupInfo.phone && pickupInfo.email && pickupInfo.store;
         }
@@ -330,8 +423,12 @@ export default function CheckoutPage() {
   };
 
   // 返回上一步
-  const handlePreviousStep = () => {
-    setCurrentStep(currentStep - 1);
+  const handlePreviousStep = (step) => {
+    if (step) {
+      setCurrentStep(step);
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   return (
@@ -351,10 +448,13 @@ export default function CheckoutPage() {
               {/* 步驟 1：配送方式 */}
               {currentStep === 1 && (
                 <DeliveryMethod
+                  user={user}
                   deliveryMethod={deliveryMethod}
                   handleDeliveryMethodChange={handleDeliveryMethodChange}
-                  deliveryInfo={deliveryInfo}
-                  handleDeliveryInfoChange={handleDeliveryInfoChange}
+                  userAddresses={userAddresses}
+                  selectedAddressId={selectedAddressId}
+                  setSelectedAddressId={setSelectedAddressId}
+                  onAddNewAddress={handleAddNewAddress}
                   pickupInfo={pickupInfo}
                   handlePickupInfoChange={handlePickupInfoChange}
                   storeLocations={storeLocations}
@@ -399,10 +499,14 @@ export default function CheckoutPage() {
               {/* 步驟 4：確認訂單 */}
               {currentStep === 4 && (
                 <OrderConfirmation
+                  user={user}
                   cartItems={cartItems}
                   totalPrice={totalPrice}
                   deliveryMethod={deliveryMethod}
-                  deliveryInfo={deliveryInfo}
+                  userAddresses={userAddresses}
+                  selectedAddressId={selectedAddressId}
+                  setSelectedAddressId={setSelectedAddressId}
+                  onAddNewAddress={handleAddNewAddress}
                   pickupInfo={pickupInfo}
                   storeLocations={storeLocations}
                   deliveryDate={deliveryDate}
@@ -410,9 +514,16 @@ export default function CheckoutPage() {
                   availableDates={availableDates}
                   availableTimes={availableTimes}
                   paymentMethod={paymentMethod}
+                  invoiceType={invoiceType}
+                  invoiceInfo={invoiceInfo}
                   orderNotes={orderNotes}
                   handlePreviousStep={handlePreviousStep}
                   handleSubmitOrder={handleSubmitOrder}
+                  promoCode={promoCode}
+                  setPromoCode={setPromoCode}
+                  promoDiscount={promoDiscount}
+                  onApplyPromoCode={handleApplyPromoCode}
+                  promoError={promoError}
                 />
               )}
             </div>
@@ -424,6 +535,7 @@ export default function CheckoutPage() {
               cartItems={cartItems}
               totalPrice={totalPrice}
               deliveryMethod={deliveryMethod}
+              promoDiscount={promoDiscount}
             />
           </div>
         </div>

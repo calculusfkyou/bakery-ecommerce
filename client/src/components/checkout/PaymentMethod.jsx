@@ -235,7 +235,7 @@ export function PaymentMethod({
 
       <div className="mt-6 flex justify-between">
         <button
-          onClick={handlePreviousStep}
+          onClick={() => handlePreviousStep()}
           className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200"
         >
           返回上一步
