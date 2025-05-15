@@ -3,6 +3,200 @@ import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+// 獲取所有用戶 (僅限管理員)
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.status(200).json({
+      status: 'success',
+      results: users.length,
+      data: users
+    });
+  } catch (error) {
+    console.error('獲取所有用戶錯誤:', error);
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤'
+    });
+  }
+};
+
+// 獲取特定用戶 (僅限管理員)
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: ['password'] }
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: '找不到用戶'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: user
+    });
+  } catch (error) {
+    console.error('獲取用戶錯誤:', error);
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤'
+    });
+  }
+};
+
+// 創建用戶 (僅限管理員)
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password, phone, role, isVerified } = req.body;
+
+    // 檢查郵件是否已存在
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        status: 'fail',
+        message: '此電子郵件已被註冊'
+      });
+    }
+
+    // 密碼加密
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 創建用戶
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      role: role || 'user',
+      isVerified: isVerified || false
+    });
+
+    // 排除密碼後回傳
+    const userWithoutPassword = { ...user.toJSON() };
+    delete userWithoutPassword.password;
+
+    res.status(201).json({
+      status: 'success',
+      data: userWithoutPassword
+    });
+  } catch (error) {
+    console.error('創建用戶錯誤:', error);
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤'
+    });
+  }
+};
+
+// 更新用戶 (僅限管理員)
+export const updateUser = async (req, res) => {
+  try {
+    const { name, email, phone, role, isVerified, password } = req.body;
+    const userId = req.params.id;
+
+    // 檢查用戶是否存在
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: '找不到用戶'
+      });
+    }
+
+    // 檢查電子郵件是否已被其他用戶使用
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({
+          status: 'fail',
+          message: '此電子郵件已被其他用戶使用'
+        });
+      }
+    }
+
+    // 準備要更新的數據
+    const updateData = {
+      name: name || user.name,
+      email: email || user.email,
+      phone: phone || user.phone,
+      role: role || user.role,
+      isVerified: isVerified !== undefined ? isVerified : user.isVerified
+    };
+
+    // 如果提供了新密碼，則加密
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    // 更新用戶
+    await User.update(updateData, { where: { id: userId } });
+
+    // 獲取更新後的用戶數據
+    const updatedUser = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] }
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: updatedUser
+    });
+  } catch (error) {
+    console.error('更新用戶錯誤:', error);
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤'
+    });
+  }
+};
+
+// 删除用戶 (僅限管理員)
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // 檢查用戶是否存在
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: '找不到用戶'
+      });
+    }
+
+    // 防止删除預設管理員
+    if (user.email === 'admin@example.com') {
+      return res.status(403).json({
+        status: 'fail',
+        message: '無法删除預設管理員帳號'
+      });
+    }
+
+    // 删除用戶
+    await User.destroy({ where: { id: userId } });
+
+    res.status(204).json({
+      status: 'success',
+      data: null
+    });
+  } catch (error) {
+    console.error('删除用戶錯誤:', error);
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤'
+    });
+  }
+};
+
 export const register = async (req, res) => {
   console.log('收到註冊請求:', req.body);
   const { name, email, password, phone } = req.body;

@@ -6,9 +6,14 @@ import {
   getMe,
   updateProfile,
   changePassword,
-  uploadAvatar
+  uploadAvatar,
+  getAllUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser
 } from '../controllers/authController.js';
-import { protect } from '../middlewares/authMiddleware.js';
+import { protect, restrictTo } from '../middlewares/authMiddleware.js';
 import { upload } from '../config/uploadConfig.js';
 
 const router = express.Router();
@@ -23,5 +28,12 @@ router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 router.put('/change-password', protect, changePassword);
 router.post('/avatar', protect, upload.single('avatar'), uploadAvatar);
+
+// 會員管理路由 (需要管理員權限)
+router.get('/users', protect, restrictTo('admin', 'manager'), getAllUsers);
+router.get('/users/:id', protect, restrictTo('admin', 'manager'), getUser);
+router.post('/users', protect, restrictTo('admin'), createUser);
+router.put('/users/:id', protect, restrictTo('admin'), updateUser);
+router.delete('/users/:id', protect, restrictTo('admin'), deleteUser);
 
 export default router;

@@ -21,6 +21,8 @@ import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminOrderDetailPage from "./pages/admin/AdminOrderDetailPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminProductEditPage from "./pages/admin/AdminProductEditPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminUserDetailPage from "./pages/admin/AdminUserDetailPage";
 
 // 保護管理員路由
 const ProtectedAdminRoute = ({ children }) => {
@@ -113,6 +115,22 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <AdminProductEditPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedAdminRoute>
+                <AdminUsersPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:userId"
+            element={
+              <ProtectedAdminRoute>
+                <AdminUserDetailPage />
               </ProtectedAdminRoute>
             }
           />

@@ -125,15 +125,24 @@ export const protect = async (req, res, next) => {
 // 針對特定角色限制路由訪問
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
-    // 特別檢查管理員帳號
-    if (req.user.email === 'admin@example.com' || (req.user && roles.includes(req.user.role))) {
-      return next();
+    // 確保 req.user 存在（應由 protect 中間件設置）
+    if (!req.user) {
+      return res.status(401).json({
+        status: 'fail',
+        message: '請先登入'
+      });
     }
 
-    return res.status(403).json({
-      status: 'fail',
-      message: '您沒有權限執行此操作'
-    });
+    // 檢查用戶角色是否在允許的角色列表中
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        status: 'fail',
+        message: '您沒有權限執行此操作'
+      });
+    }
+
+    // 如果角色有效，繼續下一步
+    next();
   };
 };
 
