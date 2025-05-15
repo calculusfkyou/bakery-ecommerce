@@ -7,19 +7,6 @@ import storeRoutes from './routes/storeRoutes.js'; // 引入門市路由
 import authRoutes from './routes/authRoutes.js'; // 引入認證路由
 import cookieParser from 'cookie-parser';
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = path.join(__dirname, 'public/uploads/avatars');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-  console.log('Created uploads directory:', uploadDir);
-}
-
 dotenv.config();
 
 const app = express();
@@ -55,9 +42,6 @@ app.use('/api/stores', storeRoutes);
 
 // 添加認證路由
 app.use('/api/auth', authRoutes);
-
-// 提供靜態文件訪問
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.listen(PORT, async () => {
   try {
