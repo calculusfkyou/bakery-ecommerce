@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home'
 import ContactPage from './pages/ContactPage'; // 匯入 ContactPage
 import ProductsPage from './pages/ProductsPage'; // 匯入 ProductsPage
@@ -15,7 +15,30 @@ import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import LoginPage from './pages/auth/LoginPage';
+import OrderTrackingPage from './pages/OrderTrackingPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
+import AdminOrderDetailPage from "./pages/admin/AdminOrderDetailPage";
 
+// 保護管理員路由
+const ProtectedAdminRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('token') !== null;
+  const isAdmin = localStorage.getItem('userRole') === 'admin';
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    // 未登入，重定向至登入頁面並記住原來要訪問的URL
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!isAdmin) {
+    // 已登入但不是管理員，重定向至首頁
+    return <Navigate to="/" replace />;
+  }
+
+  // 已登入且是管理員，顯示目標組件
+  return children;
+};
 
 function App() {
   return (
@@ -37,8 +60,36 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/register" element={<RegisterPage />} /> {/* 新增註冊路由 */}
           <Route path="/login" element={<LoginPage />} /> {/* 新增登入路由 */}
+          <Route path="/order-tracking" element={<OrderTrackingPage />} />
+          <Route path="/order-tracking/:orderId" element={<OrderTrackingPage />} />
           <Route path="*" element={<NotFoundPage />} />
           {/* Add other routes here */}
+
+          {/* 管理員路由 */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedAdminRoute>
+                <AdminOrdersPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/orders/:orderId"
+            element={
+              <ProtectedAdminRoute>
+                <AdminOrderDetailPage />
+              </ProtectedAdminRoute>
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>

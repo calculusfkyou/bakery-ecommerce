@@ -5,6 +5,7 @@ import sequelize from './config/database.js'; // 引入資料庫連線
 import newsRoutes from './routes/newsRoutes.js'; // 引入新聞路由
 import storeRoutes from './routes/storeRoutes.js'; // 引入門市路由
 import authRoutes from './routes/authRoutes.js'; // 引入認證路由
+import orderRoutes from './routes/orderRoutes.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -42,6 +43,9 @@ app.use('/api/stores', storeRoutes);
 
 // 添加認證路由
 app.use('/api/auth', authRoutes);
+
+// 添加訂單路由
+app.use('/api/orders', orderRoutes);
 
 app.listen(PORT, async () => {
   try {

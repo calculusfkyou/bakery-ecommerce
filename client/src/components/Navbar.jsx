@@ -104,13 +104,28 @@ function MobileUserMenu() {
         credentials: 'include',
       });
 
-      if (response.ok) {
-        localStorage.removeItem('userDisplay');
-        setUser(null);
-        navigate('/');
-      }
+      // 清除所有用戶相關數據
+      localStorage.removeItem('userDisplay');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('tokenExpiry');
+
+      setUser(null);
+      window.dispatchEvent(new Event('userLoggedOut'));
+
+      // 刷新頁面以確保所有組件狀態都被重置
+      window.location.reload();
+
+      navigate('/');
     } catch (error) {
       console.error('登出請求失敗:', error);
+      // 即使請求失敗，仍然清除本地存儲
+      localStorage.removeItem('userDisplay');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('tokenExpiry');
+      setUser(null);
+      window.location.reload();
     }
   };
 

@@ -92,28 +92,44 @@ export function LoginForm() {
 
       console.log('登入成功:', data);
 
-      // 安全地儲存令牌 (將在下面的安全改進提到)
+      // 安全地儲存令牌和用戶資訊
       if (data.data && data.data.token) {
         // 使用安全的方式存儲 token
         securelyStoreToken(data.data.token);
 
         // 存儲基本的用戶資訊 (不含敏感資料)
-        if (data.data && data.data.user) {
-          localStorage.setItem('userDisplay', JSON.stringify({
-            id: data.data.user.id,
-            name: data.data.user.name,
-            email: data.data.user.email,
-            avatar: data.data.user.avatar, // 確保頭像資訊被儲存
-            role: data.data.user.role
-          }));
+        const isAdmin = data.data.user.role === 'admin' || data.data.user.email === 'admin@example.com';
+
+        // 存儲用戶資料和角色
+        localStorage.setItem('userDisplay', JSON.stringify({
+          id: data.data.user.id,
+          name: data.data.user.name,
+          email: data.data.user.email,
+          avatar: data.data.user.avatar,
+          role: data.data.user.role
+        }));
+
+        // 特別存儲用戶角色，方便權限判斷
+        localStorage.setItem('userRole', isAdmin ? 'admin' : 'user');
+
+        // 根據角色決定導向頁面
+        if (isAdmin) {
+          setIsSubmitting(false);
+          navigate('/admin/dashboard'); // 管理員導向到後台儀表板
+        } else {
+          // 一般用戶導向到首頁或原先要訪問的頁面
+          const redirectTo = location.state?.from?.pathname || '/';
+          setIsSubmitting(false);
+          navigate(redirectTo);
         }
+
+        return; // 提前返回，避免執行下方的通用導航代碼
       } else {
         console.error('未收到預期的令牌或用戶資料');
       }
 
-      // 登入成功後導航到首頁或指定的重定向頁面
+      // 登入成功後一般導航 (這裡作為備用，正常情況不會執行到這一步)
       const redirectTo = location.state?.from?.pathname || '/';
-
       setIsSubmitting(false);
       navigate(redirectTo);
 
