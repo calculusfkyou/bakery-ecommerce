@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { FiMinus, FiPlus, FiHeart, FiCheck, FiShoppingCart, FiArrowRight } from 'react-icons/fi';
+import { getProductById } from '../services/productService';
 
 export default function ProductDetailPage() {
   const { productId } = useParams();
@@ -23,58 +24,36 @@ export default function ProductDetailPage() {
 
   // 從所有商品中查找符合 ID 的產品
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProduct = async () => {
       try {
-        const ProductsPageModule = await import('./ProductsPage');
+        setLoading(true);
+        const productData = await getProductById(parseInt(productId));
 
-        // 正確獲取導出的變數
-        const recommendedDrinksData = ProductsPageModule.recommendedDrinksData || [];
-        const classicDrinksData = ProductsPageModule.classicDrinksData || [];
-
-        // 檢查是否有這些變數
-        const specialDrinksData = ProductsPageModule.specialDrinksData || [];
-        const mixDrinksData = ProductsPageModule.mixDrinksData || [];
-
-        // 這裡取得 ProductsPage.jsx 中定義的變數
-        const allProducts = [
-          ...recommendedDrinksData,
-          ...classicDrinksData,
-          ...specialDrinksData,
-          ...mixDrinksData
-        ].filter(item => item); // 過濾掉 undefined 項目
-
-        console.log("所有商品:", allProducts);
-        console.log("尋找商品 ID:", productId);
-
-        const foundProduct = allProducts.find(p => p.id === parseInt(productId));
-        console.log("找到商品:", foundProduct);
-
-        if (foundProduct) {
-          setProduct(foundProduct);
+        if (productData) {
+          setProduct(productData);
 
           // 設定初始選項
-          if (foundProduct.customizable && foundProduct.customOptions) {
-            foundProduct.customOptions.sizes && setSelectedSize(foundProduct.customOptions.sizes[0]);
-            foundProduct.customOptions.flavors && setSelectedFlavor(foundProduct.customOptions.flavors[0]);
-            foundProduct.customOptions.decorations && setSelectedDecoration(foundProduct.customOptions.decorations[0]);
+          if (productData.customizable && productData.customOptions) {
+            productData.customOptions.sizes && setSelectedSize(productData.customOptions.sizes[0]);
+            productData.customOptions.flavors && setSelectedFlavor(productData.customOptions.flavors[0]);
+            productData.customOptions.decorations && setSelectedDecoration(productData.customOptions.decorations[0]);
           }
 
           // 設定基本價格
-          const priceStr = foundProduct.price?.toString() || '';
+          const priceStr = productData.price?.toString() || '';
           const priceMatch = priceStr.match(/\$(\d+)/);
           if (priceMatch) {
             setBasePrice(parseInt(priceMatch[1], 10));
           }
         }
-
-        setLoading(false);
       } catch (error) {
         console.error("載入商品資料時發生錯誤:", error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchProduct();
   }, [productId]);
 
   useEffect(() => {
