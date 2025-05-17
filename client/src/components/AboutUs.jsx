@@ -18,12 +18,12 @@ export function AboutUs() {
         {/* ... (text content and button remain the same) ... */}
          <div className="max-w-md"> {/* 限制文字區塊最大寬度 */}
           <h2 className={`text-4xl font-serif ${subtitleColor} tracking-widest mb-1`}>ABOUT US</h2>
-          <h3 className={`text-3xl font-semibold ${titleColor} mb-6`}>關於摸摸茶</h3>
+          <h3 className={`text-3xl font-semibold ${titleColor} mb-6`}>關於匠心麵包坊</h3>
           <p className={`${textColor} text-base leading-relaxed mb-3`}>
-            摸摸茶總部設有產品研發部門，每兩季會推出新品上市。
+            匠心麵包坊總部設有產品研發部門，每兩季會推出新品上市。
           </p>
           <p className={`${textColor} text-base leading-relaxed mb-3`}>
-            摸摸茶將客人的恩惠謹記在心中，把讚美化成心中的動力，批評則虛心接受，不足的地方努力學習改進。
+            匠心麵包坊將客人的恩惠謹記在心中，把讚美化成心中的動力，批評則虛心接受，不足的地方努力學習改進。
           </p>
           <p className={`${textColor} text-base leading-relaxed mb-8`}>
             堅持用最好的與你/妳相見是給所有顧客的承諾。

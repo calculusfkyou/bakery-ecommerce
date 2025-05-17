@@ -2,9 +2,9 @@ import React from 'react';
 
 export function AboutGallery() {
   const images = [
-    { src: "/assets/Logo.png", alt: "摸摸茶店鋪環境" },
-    { src: "/assets/Logo.png", alt: "製茶過程" },
-    { src: "/assets/Logo.png", alt: "招牌飲品" },
+    { src: "/assets/Logo.png", alt: "匠心麵包坊環境" },
+    { src: "/assets/Logo.png", alt: "製作過程" },
+    { src: "/assets/Logo.png", alt: "招牌可頌" },
     { src: "/assets/Logo.png", alt: "團隊合影" }
   ];
 
@@ -12,7 +12,7 @@ export function AboutGallery() {
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-semibold text-[#5a6440]">摸摸茶映像</h2>
+          <h2 className="text-3xl font-semibold text-[#5a6440]">匠心麵包坊映像</h2>
           <div className="w-24 h-1 bg-[#5a6440] mx-auto mt-3"></div>
         </div>
 

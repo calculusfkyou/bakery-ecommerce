@@ -23,10 +23,10 @@ export function StoreLocations() {
             <h2 className={`text-4xl font-serif ${titleColor} tracking-widest mb-1`}>OUR STORES</h2>
             <h3 className={`text-3xl font-semibold ${textColor} mb-4`}>門市據點</h3>
             <p className={`${textColor} text-base leading-relaxed mb-2`}>
-              茶即是生活態度。
+              麵包即是生活態度。
             </p>
             <p className={`${textColor} text-base leading-relaxed mb-6`}>
-              我們相信每一杯茶代表的都是一段情感、一個回憶。
+              我們相信每個麵包代表的都是一段情感、一個回憶。
             </p>
             {/* READ MORE 按鈕 */}
             <div className="mt-4">

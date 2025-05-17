@@ -24,7 +24,7 @@ export function StoreDetailHeader({ name, image, onBack }) {
       </div>
 
       {/* 門市名稱 */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">拾玖茶屋 {name}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">匠心麵包坊 {name}</h1>
     </div>
   );
 }

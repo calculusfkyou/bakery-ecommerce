@@ -15,7 +15,7 @@ export default function ContactFormSection() {
             ❖ 預約訂單請撥打訂購門市電話｜或使用線上點餐系統訂購，此聯繫表單不提供訂餐訂單。
           </p>
           <p className={`${textColor} text-sm mt-2`}>
-            摸摸茶粉絲專頁 <a href="#" className="underline">Facebook</a> | <a href="#" className="underline">Instagram</a>
+            匠心麵包坊粉絲專頁 <a href="#" className="underline">Facebook</a> | <a href="#" className="underline">Instagram</a>
           </p>
         </div>
         {/* 分隔線 */}

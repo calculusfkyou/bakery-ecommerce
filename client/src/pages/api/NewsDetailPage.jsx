@@ -53,7 +53,7 @@ export default function NewsDetailPage() {
 
   // 分享功能
   const shareUrl = window.location.href;
-  const shareTitle = news?.title || '摸摸茶坊 - 最新消息';
+  const shareTitle = news?.title || '匠心麵包坊 - 最新消息';
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
