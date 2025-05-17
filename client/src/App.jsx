@@ -23,6 +23,7 @@ import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminProductEditPage from "./pages/admin/AdminProductEditPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminUserDetailPage from "./pages/admin/AdminUserDetailPage";
+import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 
 // 保護管理員路由
 const ProtectedAdminRoute = ({ children }) => {
@@ -131,6 +132,14 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <AdminUserDetailPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedAdminRoute>
+                <AdminSettingsPage />
               </ProtectedAdminRoute>
             }
           />
