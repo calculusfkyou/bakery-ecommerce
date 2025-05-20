@@ -191,11 +191,14 @@ export default function CheckoutPage() {
   const setAvailableTimesByDate = (selectedDate) => {
     // 時間段示例，實際應用中可能需要從後端獲取
     const timeSlots = [
-      { value: '09:00-11:00', label: '09:00 - 11:00' },
-      { value: '11:00-13:00', label: '11:00 - 13:00' },
-      { value: '13:00-15:00', label: '13:00 - 15:00' },
-      { value: '15:00-17:00', label: '15:00 - 17:00' },
-      { value: '17:00-19:00', label: '17:00 - 19:00' }
+      { value: '09:00-10:00', label: '09:00 - 10:00' },
+      { value: '10:00-11:00', label: '10:00 - 11:00' },
+      { value: '11:00-12:00', label: '11:00 - 12:00' },
+      { value: '13:00-14:00', label: '13:00 - 14:00' },
+      { value: '14:00-15:00', label: '14:00 - 15:00' },
+      { value: '15:00-16:00', label: '15:00 - 16:00' },
+      { value: '16:00-17:00', label: '16:00 - 17:00' },
+      { value: '17:00-18:00', label: '17:00 - 18:00' }
     ];
 
     // 如果是當天或明天，可能需要根據當前時間過濾可用時段
@@ -330,14 +333,14 @@ export default function CheckoutPage() {
     // 根據配送方式獲取對應的配送信息
     const deliveryData = deliveryMethod === 'delivery'
       ? {
-          deliveryMethod,
-          deliveryInfo: {
-            name: selectedAddress?.recipient || '',
-            phone: selectedAddress?.phone || '',
-            address: `${selectedAddress?.city || ''}${selectedAddress?.district || ''}${selectedAddress?.address || ''}`,
-          },
-          pickupInfo: null
-        }
+        deliveryMethod,
+        deliveryInfo: {
+          name: selectedAddress?.recipient || '',
+          phone: selectedAddress?.phone || '',
+          address: `${selectedAddress?.city || ''}${selectedAddress?.district || ''}${selectedAddress?.address || ''}`,
+        },
+        pickupInfo: null
+      }
       : { deliveryMethod, deliveryInfo: null, pickupInfo };
 
     // 獲取對應的店鋪信息（如果是自取）
