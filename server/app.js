@@ -52,7 +52,7 @@ app.listen(PORT, async () => {
     await sequelize.authenticate();
     console.log('MySQL connected successfully');
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: false });
     console.log('Tables sync successfully');
   } catch (error) {
     console.log('Unable to connect to MySQL:', error);
