@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  client:
+    build: .
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - server
+    networks:
+      - bakery-system-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.3
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: bakery_system
+    ports:
+      - "3333:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  server:
+    build: ./server/.
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PASSWORD: test123
+      DB_PORT: 3306
+      DB_NAME: bakery_system
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  bakery-system-network:
