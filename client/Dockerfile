@@ -2,10 +2,10 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY client/package.json client/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm install
 
-COPY client ./
+COPY . .
 
 EXPOSE 5173
 

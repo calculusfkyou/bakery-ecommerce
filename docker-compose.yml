@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   client:
-    build: .
+    build: ./client
     ports:
       - "5173:5173"
     volumes:
@@ -15,17 +15,6 @@ services:
     networks:
       - bakery-system-network
     restart: unless-stopped
-
-  mysql:
-    image: mysql:8.3
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: test123
-      MYSQL_DATABASE: bakery_system
-    ports:
-      - "3333:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
   server:
     build: ./server/.
     ports:
@@ -38,6 +27,16 @@ services:
       DB_PORT: 3306
       DB_NAME: bakery_system
     restart: unless-stopped
+  mysql:
+    image: mysql:8.3
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: bakery_system
+    ports:
+      - "3333:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 volumes:
   mysql_data:
