@@ -22,7 +22,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('伺服器運行中 🚀');
 });
 
