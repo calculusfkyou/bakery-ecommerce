@@ -22,7 +22,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('伺服器運行中 🚀');
 });
 
@@ -47,15 +47,29 @@ app.use('/api/auth', authRoutes);
 // 添加訂單路由
 app.use('/api/orders', orderRoutes);
 
+const connectionRetry = async () => {
+  let connected = false;
+  while (!connected) {
+    try {
+      await sequelize.authenticate();
+      console.log('MySQL connected successfully');
+
+      await sequelize.sync({ alter: true });
+      console.log('Tables sync successfully');
+
+      connected = true;
+    } catch (error) {
+      console.log(' MySQL not ready, retrying in 3s...');
+      await new Promise(res => setTimeout(res, 3000));
+    }
+  }
+};
+
 app.listen(PORT, async () => {
   try {
-    await sequelize.authenticate();
-    console.log('MySQL connected successfully');
-
-    await sequelize.sync({ alter: false });
-    console.log('Tables sync successfully');
+    await connectionRetry();
   } catch (error) {
-    console.log('Unable to connect to MySQL:', error);
+    console.log(error);
   }
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
