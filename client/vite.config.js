@@ -11,6 +11,6 @@ export default defineConfig({
     proxy: {
       '/api': 'https://bakery-system.sdpmlab.org/api'
     },
-    allowedHosts: true,
+    allowedHosts: true
   }
 })
