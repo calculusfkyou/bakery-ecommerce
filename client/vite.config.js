@@ -9,6 +9,7 @@ export default defineConfig({
     strictPort: true,
     port: 5173,
     allowedHosts: true,
+    cors: true,
     proxy: {
       '/api': 'https://bakery-system.sdpmlab.org/api'
     },
