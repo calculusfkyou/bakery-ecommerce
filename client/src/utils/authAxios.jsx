@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 創建具有授權功能的axios實例
 const authAxios = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://bakery-system.sdpmlab.org/api',
   withCredentials: true // 允許跨域請求攜帶cookies
 });
 
