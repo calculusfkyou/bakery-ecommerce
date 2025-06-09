@@ -36,7 +36,7 @@ export default function ProfilePage() {
     // 從後端獲取用戶資料
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/me', {
+        const response = await fetch('https://bakery-system.sdpmlab.org/api/auth/me', {
           method: 'GET',
           credentials: 'include',
         });

@@ -6,27 +6,23 @@ import {
   createOrder,
   trackOrder
 } from '../controllers/orderController.js';
-import { isAuthenticated, isAdmin, mockAdminAuth, restrictTo } from '../middlewares/authMiddleware.js';
+import { protect, restrictTo } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// 開發環境中，使用模擬身份驗證
-const authMiddleware = process.env.NODE_ENV === 'development' ? mockAdminAuth : isAuthenticated;
-const adminMiddleware = process.env.NODE_ENV === 'development' ? mockAdminAuth : isAdmin;
+// ✅ 所有訂單：需要登入 + admin
+router.get('/', protect, restrictTo('admin'), getOrders);
 
-// 獲取所有訂單 (需要管理員權限)
-router.get('/', authMiddleware, adminMiddleware, getOrders);
-
-// 訂單追蹤功能 (公開API，不需要身份驗證)
+// ✅ 公開：訂單追蹤
 router.get('/track', trackOrder);
 
-// 創建新訂單 (任何已驗證用戶)
-router.post('/', authMiddleware, createOrder);
+// ✅ 建立訂單：只要登入即可
+router.post('/', protect, createOrder);
 
-// 獲取特定訂單
-router.get('/:orderId', authMiddleware, getOrder);
+// ✅ 查看訂單：只要登入即可
+router.get('/:orderId', protect, getOrder);
 
-// 更新訂單狀態 (需要管理員權限)
-router.put('/:orderId', authMiddleware, adminMiddleware, updateOrder);
+// ✅ 更新訂單：僅 admin 可改
+router.put('/:orderId', protect, restrictTo('admin'), updateOrder);
 
 export default router;
