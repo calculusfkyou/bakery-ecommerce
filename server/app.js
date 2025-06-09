@@ -8,23 +8,32 @@ import authRoutes from './routes/authRoutes.js'; // 引入認證路由
 import orderRoutes from './routes/orderRoutes.js';
 import cookieParser from 'cookie-parser';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'http://localhost:5173', // 明確指定前端應用的來源
-  credentials: true, // 允許憑證
+  origin: process.env.NODE_ENV === 'production'
+    ? true  // 在生產環境中允許任何來源
+    : 'http://localhost:5173', // 開發環境限制
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static('public')); // 提供靜態檔案服務
 
-app.get('/', (req, res) => {
-  res.send('伺服器運行中 🚀');
-});
+// app.get('/', (req, res) => {
+//   res.send('伺服器運行中 🚀');
+// });
 
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from MoMo Backend! We\'ll go from here now.' });
@@ -46,6 +55,9 @@ app.use('/api/auth', authRoutes);
 
 // 添加訂單路由
 app.use('/api/orders', orderRoutes);
+
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');});
 
 app.listen(PORT, async () => {
   try {
