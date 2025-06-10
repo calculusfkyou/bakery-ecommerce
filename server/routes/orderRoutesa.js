@@ -26,4 +26,3 @@ router.get('/:orderId', protect, getOrder);
 router.put('/:orderId', protect, restrictTo('admin'), updateOrder);
 
 export default router;
-

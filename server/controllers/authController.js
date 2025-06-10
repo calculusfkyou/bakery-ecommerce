@@ -317,8 +317,8 @@ export const login = async (req, res) => {
     // 設置 HTTP-only Cookie
     res.cookie('token', token, {
       httpOnly: true, // 重要：防止 JavaScript 訪問
-      secure: process.env.NODE_ENV === 'production', // 生產環境下要求 HTTPS
-      sameSite: 'lax', // 防止 CSRF 攻擊
+      secure: process.env.NODE_ENV === 'production' || true, // 生產環境下要求 HTTPS
+      sameSite: 'None', // 防止 CSRF 攻擊
       maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30天或1天
       path: '/'
     });

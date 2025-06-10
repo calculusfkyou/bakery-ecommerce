@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'http://localhost:5173', // 明確指定前端應用的來源
+  origin: 'https://bakery-system.sdpmlab.org', // 明確指定前端應用的來源
   credentials: true, // 允許憑證
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

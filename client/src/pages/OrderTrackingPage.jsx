@@ -27,7 +27,7 @@ export default function OrderTrackingPage() {
     try {
       setLoading(true);
       // 使用公開的訂單追蹤路由 /track 而不是需要身份驗證的 /:orderId 路由
-      const response = await axios.get('http://localhost:5000/api/orders/track', {
+      const response = await axios.get('https://bakery-system.sdpmlab.org/api/orders/track', {
         params: {
           orderNumber: id
         }

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 創建具有授權功能的axios實例
 const authAxios = axios.create({
-  baseURL: 'https://bakery-system.sdpmlab.org/api',
+  baseURL: '/api',
   withCredentials: true // 允許跨域請求攜帶cookies
 });
 
@@ -10,6 +10,7 @@ const authAxios = axios.create({
 authAxios.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
+    console.log('Token:', token); // 確認 token 是否存在
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

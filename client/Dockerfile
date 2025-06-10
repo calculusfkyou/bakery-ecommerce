@@ -1,12 +1,12 @@
-FROM node:20-alpine
-
+# client/Dockerfile
+FROM node:18 AS builder
 WORKDIR /app
-
-COPY package.json package-lock.json ./
+COPY client/package*.json ./
 RUN npm install
+COPY client/. .
+RUN npm run build
 
-COPY . .
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 5173
-
-CMD ["npm", "run", "dev"]
